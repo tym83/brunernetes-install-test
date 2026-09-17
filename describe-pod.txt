@@ -1,0 +1,88 @@
+### kubectl -n brunernetes-system get pods -o wide
+NAME                           READY   STATUS             RESTARTS   AGE     IP           NODE                 NOMINATED NODE   READINESS GATES
+brunernetes-768cbb7fc4-5j9br   0/1     ImagePullBackOff   0          5m21s   10.244.0.4   vm-instance-bruner   <none>           <none>
+
+### kubectl -n brunernetes-system describe pod -l app.kubernetes.io/name=brunernetes
+Name:             brunernetes-768cbb7fc4-5j9br
+Namespace:        brunernetes-system
+Priority:         0
+Service Account:  brunernetes
+Node:             vm-instance-bruner/10.244.68.127
+Start Time:       Thu, 17 Sep 2026 00:23:28 +0000
+Labels:           app.kubernetes.io/component=controller
+                  app.kubernetes.io/instance=brunernetes
+                  app.kubernetes.io/name=brunernetes
+                  pod-template-hash=768cbb7fc4
+Annotations:      <none>
+Status:           Pending
+SeccompProfile:   RuntimeDefault
+IP:               10.244.0.4
+IPs:
+  IP:           10.244.0.4
+Controlled By:  ReplicaSet/brunernetes-768cbb7fc4
+Containers:
+  manager:
+    Container ID:  
+    Image:         ghcr.io/brunka09/brunernetes:0.1.0
+    Image ID:      
+    Port:          8081/TCP
+    Host Port:     0/TCP
+    Args:
+      --health-probe-bind-address=:8081
+      --metrics-bind-address=127.0.0.1:8080
+      --leader-elect=false
+      --zap-log-level=info
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        50m
+      memory:     96Mi
+    Liveness:     http-get http://:health/healthz delay=15s timeout=1s period=20s #success=1 #failure=3
+    Readiness:    http-get http://:health/readyz delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vzwcm (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-vzwcm:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node-role.kubernetes.io/control-plane:NoSchedule op=Exists
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                    From               Message
+  ----     ------     ----                   ----               -------
+  Normal   Scheduled  5m21s                  default-scheduler  Successfully assigned brunernetes-system/brunernetes-768cbb7fc4-5j9br to vm-instance-bruner
+  Normal   Pulling    2m15s (x5 over 5m21s)  kubelet            Pulling image "ghcr.io/brunka09/brunernetes:0.1.0"
+  Warning  Failed     2m14s (x5 over 5m15s)  kubelet            Failed to pull image "ghcr.io/brunka09/brunernetes:0.1.0": failed to pull and unpack image "ghcr.io/brunka09/brunernetes:0.1.0": failed to resolve image: failed to do request: Head "https://ghcr.io/v2/brunka09/brunernetes/manifests/0.1.0": dial tcp: lookup ghcr.io on 127.0.0.53:53: server misbehaving
+  Warning  Failed     2m14s (x5 over 5m15s)  kubelet            Error: ErrImagePull
+  Normal   BackOff    15s (x20 over 5m15s)   kubelet            Back-off pulling image "ghcr.io/brunka09/brunernetes:0.1.0"
+  Warning  Failed     15s (x20 over 5m15s)   kubelet            Error: ImagePullBackOff
+
+### kubectl -n brunernetes-system get events --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON              OBJECT                              MESSAGE
+5m21s       Normal    Scheduled           pod/brunernetes-768cbb7fc4-5j9br    Successfully assigned brunernetes-system/brunernetes-768cbb7fc4-5j9br to vm-instance-bruner
+5m21s       Normal    SuccessfulCreate    replicaset/brunernetes-768cbb7fc4   Created pod: brunernetes-768cbb7fc4-5j9br
+5m21s       Normal    ScalingReplicaSet   deployment/brunernetes              Scaled up replica set brunernetes-768cbb7fc4 from 0 to 1
+2m15s       Normal    Pulling             pod/brunernetes-768cbb7fc4-5j9br    Pulling image "ghcr.io/brunka09/brunernetes:0.1.0"
+2m14s       Warning   Failed              pod/brunernetes-768cbb7fc4-5j9br    Failed to pull image "ghcr.io/brunka09/brunernetes:0.1.0": failed to pull and unpack image "ghcr.io/brunka09/brunernetes:0.1.0": failed to resolve image: failed to do request: Head "https://ghcr.io/v2/brunka09/brunernetes/manifests/0.1.0": dial tcp: lookup ghcr.io on 127.0.0.53:53: server misbehaving
+2m14s       Warning   Failed              pod/brunernetes-768cbb7fc4-5j9br    Error: ErrImagePull
+15s         Normal    BackOff             pod/brunernetes-768cbb7fc4-5j9br    Back-off pulling image "ghcr.io/brunka09/brunernetes:0.1.0"
+15s         Warning   Failed              pod/brunernetes-768cbb7fc4-5j9br    Error: ImagePullBackOff

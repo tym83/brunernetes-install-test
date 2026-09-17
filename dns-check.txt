@@ -1,0 +1,34 @@
+### kubectl -n kube-system get svc kube-dns -o jsonpath ClusterIP
+10.96.0.10
+
+### kubectl -n kube-system get svc kube-dns
+NAME       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+kube-dns   ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   6m9s
+
+### cat /etc/resolv.conf
+
+nameserver 127.0.0.53
+options edns0 trust-ad
+search tenant-workshop04.svc.cozy.local svc.cozy.local cozy.local
+
+### resolvectl status (DNS servers)
+Current DNS Server: 10.96.0.10
+       DNS Servers: 10.96.0.10
+        DNS Domain: cozy.local svc.cozy.local tenant-workshop04.svc.cozy.local
+
+### getent hosts github.com (host DNS ПОСЛЕ установки)
+RESULT: FAIL (host DNS broken)
+
+### getent hosts ghcr.io
+RESULT: FAIL
+
+### SUMMARY (facts)
+- brunernetes kube-dns (CoreDNS) ClusterIP: 10.96.0.10
+- host upstream DNS (resolvectl, before install): 10.96.0.10  -> same IP => collision
+- getent github.com BEFORE brunernetes install: OK works
+- getent github.com AFTER install: FAIL (host DNS broken)
+- root cause: kubeadm default service CIDR puts CoreDNS at 10.96.0.10, which equals the
+  tenant-provided host DNS; after install kube-proxy owns 10.96.0.10, so host DNS queries
+  hit CoreDNS (cluster-only) and external resolution breaks.
+- note: this DNS breakage MASKS the image 403 — the pull first fails at "lookup ghcr.io ...
+  server misbehaving"; only after pointing the host DNS elsewhere does the real 403 surface.

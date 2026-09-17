@@ -1,0 +1,14 @@
+### sudo crictl pull ghcr.io/brunka09/brunernetes:0.1.0
+time="2026-09-17T00:28:49Z" level=warning msg="Config \"/etc/crictl.yaml\" does not exist, trying next: \"/usr/bin/crictl.yaml\""
+time="2026-09-17T00:28:49Z" level=warning msg="Image connect using default endpoints: [unix:///run/containerd/containerd.sock unix:///run/crio/crio.sock unix:///var/run/cri-dockerd.sock]. As the default settings are now deprecated, you should set the endpoint instead."
+E0917 00:28:50.492203   10389 log.go:32] "PullImage from image service failed" err="rpc error: code = Unknown desc = failed to pull and unpack image \"ghcr.io/brunka09/brunernetes:0.1.0\": failed to resolve image: failed to do request: Head \"https://ghcr.io/v2/brunka09/brunernetes/manifests/0.1.0\": dial tcp: lookup ghcr.io on 127.0.0.53:53: server misbehaving" image="ghcr.io/brunka09/brunernetes:0.1.0"
+time="2026-09-17T00:28:50Z" level=fatal msg="pulling image: failed to pull and unpack image \"ghcr.io/brunka09/brunernetes:0.1.0\": failed to resolve image: failed to do request: Head \"https://ghcr.io/v2/brunka09/brunernetes/manifests/0.1.0\": dial tcp: lookup ghcr.io on 127.0.0.53:53: server misbehaving"
+[exit=1]
+### AFTER DNS FIX: sudo crictl pull ghcr.io/brunka09/brunernetes:0.1.0
+time="2026-09-17T00:30:01Z" level=warning msg="Config \"/etc/crictl.yaml\" does not exist, trying next: \"/usr/bin/crictl.yaml\""
+time="2026-09-17T00:30:01Z" level=warning msg="Image connect using default endpoints: [unix:///run/containerd/containerd.sock unix:///run/crio/crio.sock unix:///var/run/cri-dockerd.sock]. As the default settings are now deprecated, you should set the endpoint instead."
+E0917 00:30:02.005888   10563 log.go:32] "PullImage from image service failed" err="rpc error: code = Unknown desc = failed to pull and unpack image \"ghcr.io/brunka09/brunernetes:0.1.0\": failed to resolve image: failed to authorize: failed to fetch anonymous token: unexpected status from GET request to https://ghcr.io/token?scope=repository%3Abrunka09%2Fbrunernetes%3Apull&service=ghcr.io: 403 Forbidden" image="ghcr.io/brunka09/brunernetes:0.1.0"
+time="2026-09-17T00:30:02Z" level=fatal msg="pulling image: failed to pull and unpack image \"ghcr.io/brunka09/brunernetes:0.1.0\": failed to resolve image: failed to authorize: failed to fetch anonymous token: unexpected status from GET request to https://ghcr.io/token?scope=repository%3Abrunka09%2Fbrunernetes%3Apull&service=ghcr.io: 403 Forbidden"
+[exit=1]
+### curl -s -o /dev/null -w %{http_code} https://ghcr.io/token?scope=repository:brunka09/brunernetes:pull
+403
